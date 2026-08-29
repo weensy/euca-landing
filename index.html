@@ -41,7 +41,13 @@
     width:clamp(46px, 8vmin, 70px);
     height:auto;
     display:block;
+    overflow:visible;
     margin-bottom:clamp(2px, .45vmin, 4px);
+  }
+  .leaf{
+    transform-box:view-box;
+    transform-origin:50% 50%;
+    will-change:transform;
   }
   .brand-name{
     color:#FFFFFF;
@@ -51,17 +57,101 @@
     line-height:1;
     letter-spacing:-0.02em;
   }
+  @media (prefers-reduced-motion:reduce){
+    .leaf{ will-change:auto; }
+  }
 </style>
 </head>
 <body>
   <main class="brand" aria-label="euca">
     <svg class="logo" viewBox="24 24 52 52" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <g fill="#FFFFFF">
-        <ellipse cx="42.93" cy="42.93" rx="10" ry="16.18" transform="rotate(-22.5 42.93 42.93)"/>
-        <ellipse cx="57.07" cy="57.07" rx="10" ry="16.18" transform="rotate(22.5 57.07 57.07)"/>
+        <g class="leaf leaf--left">
+          <ellipse cx="42.93" cy="42.93" rx="10" ry="16.18" transform="rotate(-22.5 42.93 42.93)"/>
+        </g>
+        <g class="leaf leaf--right">
+          <ellipse cx="57.07" cy="57.07" rx="10" ry="16.18" transform="rotate(22.5 57.07 57.07)"/>
+        </g>
       </g>
     </svg>
     <h1 class="brand-name">euca</h1>
   </main>
+  <script>
+    (() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const brand = document.querySelector('.brand');
+      const leftLeaf = document.querySelector('.leaf--left');
+      const rightLeaf = document.querySelector('.leaf--right');
+      let target = 0;
+      let current = 0;
+      let frameId = 0;
+      let releaseTimer = 0;
+      let touchStartedAt = 0;
+      const introTimers = [];
+
+      const render = () => {
+        current += (target - current) * .075;
+
+        const shift = current * 1.6;
+        const rotation = current * 2.4;
+        leftLeaf.style.transform = `translate3d(${-shift}px, ${-shift}px, 0) rotate(${-rotation}deg)`;
+        rightLeaf.style.transform = `translate3d(${shift}px, ${shift}px, 0) rotate(${rotation}deg)`;
+
+        if (Math.abs(target - current) > .001) {
+          frameId = requestAnimationFrame(render);
+        } else {
+          current = target;
+          frameId = 0;
+        }
+      };
+
+      const setTarget = (value) => {
+        target = Math.min(1, Math.max(0, value));
+        if (!frameId) frameId = requestAnimationFrame(render);
+      };
+
+      const cancelIntro = () => {
+        while (introTimers.length) clearTimeout(introTimers.pop());
+      };
+
+      const proximity = (event) => {
+        const rect = brand.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.hypot(event.clientX - centerX, event.clientY - centerY);
+        const radius = Math.min(320, Math.max(180, Math.min(innerWidth, innerHeight) * .42));
+        return 1 - (distance - 24) / (radius - 24);
+      };
+
+      window.addEventListener('pointermove', (event) => {
+        cancelIntro();
+        if (event.pointerType === 'mouse') {
+          setTarget(event.buttons ? 1 : proximity(event));
+        }
+      }, { passive:true });
+      window.addEventListener('pointerdown', (event) => {
+        cancelIntro();
+        clearTimeout(releaseTimer);
+        touchStartedAt = performance.now();
+        setTarget(1);
+      }, { passive:true });
+      window.addEventListener('pointerup', (event) => {
+        if (event.pointerType === 'mouse') {
+          setTarget(proximity(event));
+          return;
+        }
+
+        const remaining = Math.max(0, 520 - (performance.now() - touchStartedAt));
+        releaseTimer = setTimeout(() => setTarget(0), remaining);
+      }, { passive:true });
+      window.addEventListener('pointercancel', () => setTarget(0), { passive:true });
+      window.addEventListener('blur', () => setTarget(0));
+      document.addEventListener('mouseleave', () => setTarget(0));
+
+      introTimers.push(setTimeout(() => setTarget(.72), 560));
+      introTimers.push(setTimeout(() => setTarget(0), 1480));
+    })();
+  </script>
 </body>
 </html>
