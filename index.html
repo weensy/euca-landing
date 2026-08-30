@@ -12,7 +12,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23A9C7C5'/%3E%3Cg fill='%23FFFFFF'%3E%3Cellipse cx='42.93' cy='42.93' rx='10' ry='16.18' transform='rotate(-22.5 42.93 42.93)'/%3E%3Cellipse cx='57.07' cy='57.07' rx='10' ry='16.18' transform='rotate(22.5 57.07 57.07)'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi%40500&amp;display=swap" rel="stylesheet">
+<link rel="preload" href="https://cdn.fontshare.com/wf/XASL35KKT35X3ACCBCOQKKABSR6AT3FX/6MU5BWUUPHCFUHM2F3E3QPQGKXCVBUOO/WZY5PMNTII6NKOB2TTIAX7QVAWMSY2DQ.woff2" as="font" type="font/woff2" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f%5B%5D=chillax%40500&amp;display=swap" rel="stylesheet">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
   ::selection{
@@ -49,6 +50,7 @@
     display:flex;
     flex-direction:column;
     align-items:center;
+    transform:translateY(-9px);
   }
   .logo{
     width:clamp(46px, 8vmin, 70px);
@@ -64,11 +66,18 @@
   }
   .brand-name{
     color:#FFFFFF;
-    font-family:'Satoshi', sans-serif;
+    font-family:'Chillax', sans-serif;
     font-size:clamp(42px, 7.5vmin, 72px);
     font-weight:500;
     line-height:1;
     letter-spacing:-0.02em;
+    font-synthesis:none;
+    transform:translateY(-3px);
+  }
+  .optical-e{
+    display:inline-block;
+    transform:scale(1.03);
+    transform-origin:50% 58%;
   }
   @media (prefers-reduced-motion:reduce){
     .leaf{ will-change:auto; }
@@ -87,7 +96,7 @@
         </g>
       </g>
     </svg>
-    <h1 class="brand-name">euca</h1>
+    <h1 class="brand-name"><span class="optical-e">e</span>uca</h1>
   </main>
   <script>
     (() => {
