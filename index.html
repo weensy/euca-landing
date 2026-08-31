@@ -76,8 +76,21 @@
   }
   .optical-e{
     display:inline-block;
+    position:relative;
+    color:transparent;
+  }
+  .optical-e-visual{
+    position:absolute;
+    inset:0;
+    color:#FFFFFF;
+    pointer-events:none;
     transform:scale(1.03);
     transform-origin:50% 58%;
+    user-select:none;
+  }
+  .optical-e.is-selected,
+  .optical-e.is-selected .optical-e-visual{
+    color:#A9C7C5;
   }
   @media (prefers-reduced-motion:reduce){
     .leaf{ will-change:auto; }
@@ -96,10 +109,21 @@
         </g>
       </g>
     </svg>
-    <h1 class="brand-name"><span class="optical-e">e</span>uca</h1>
+    <h1 class="brand-name"><span class="optical-e">e<span class="optical-e-visual" aria-hidden="true">e</span></span>uca</h1>
   </main>
   <script>
     (() => {
+      const opticalE = document.querySelector('.optical-e');
+      const syncOpticalSelection = () => {
+        const selection = window.getSelection();
+        const selected = selection && selection.rangeCount && !selection.isCollapsed
+          ? selection.getRangeAt(0).intersectsNode(opticalE)
+          : false;
+        opticalE.classList.toggle('is-selected', selected);
+      };
+
+      document.addEventListener('selectionchange', syncOpticalSelection);
+
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       const brand = document.querySelector('.brand');
